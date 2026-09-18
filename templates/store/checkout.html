@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Checkout{% endblock %}
+
+{% block content %}
+<div class="container page-pad">
+  <h1 class="page-title">Checkout</h1>
+
+  <div class="cart-layout">
+    <div class="checkout-form-wrap">
+      {% if form.non_field_errors %}
+        <div class="alert alert--error" role="alert">{{ form.non_field_errors.0 }}</div>
+      {% endif %}
+
+      <form method="post" novalidate class="checkout-form">
+        {% csrf_token %}
+
+        <h2 class="form-section-title">Contact</h2>
+        <div class="field">
+          <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+          {{ form.email }}
+          {% for e in form.email.errors %}<p class="field-error">{{ e }}</p>{% endfor %}
+        </div>
+
+        <h2 class="form-section-title">Shipping</h2>
+        <div class="field">
+          <label for="{{ form.full_name.id_for_label }}">{{ form.full_name.label }}</label>
+          {{ form.full_name }}
+          {% for e in form.full_name.errors %}<p class="field-error">{{ e }}</p>{% endfor %}
+        </div>
+        <div class="field">
+          <label for="{{ form.address.id_for_label }}">{{ form.address.label }}</label>
+          {{ form.address }}
+          {% for e in form.address.errors %}<p class="field-error">{{ e }}</p>{% endfor %}
+        </div>
+
+        <h2 class="form-section-title">Payment</h2>
+        <div class="pay-note">
+          <p>
+            <strong>Demo mode:</strong> this storefront records the order without
+            charging a payment method. Wire a payment provider (e.g. Razorpay or
+            Stripe) into <code>store.views.checkout_view</code> before taking live payments.
+          </p>
+        </div>
+
+        <button type="submit" class="btn btn--primary btn--lg btn--block">Place order</button>
+      </form>
+    </div>
+
+    <aside class="cart-summary">
+      <h2 class="summary-title">Order summary</h2>
+      {% for product, qty, line_total in items %}
+        <div class="summary-row">
+          <span>{{ qty }} × {{ product.name }}</span><strong>₹{{ line_total }}</strong>
+        </div>
+      {% endfor %}
+      <div class="summary-row summary-row--total">
+        <span>Total</span><strong>₹{{ subtotal }}</strong>
+      </div>
+    </aside>
+  </div>
+</div>
+{% endblock %}

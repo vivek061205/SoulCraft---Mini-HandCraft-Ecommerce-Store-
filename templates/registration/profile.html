@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Account{% endblock %}
+
+{% block content %}
+<div class="container page-pad page-narrow">
+  <h1 class="page-title">Your account</h1>
+
+  <div class="card">
+    <h2 class="section-title">Profile</h2>
+    <dl class="kv">
+      <div><dt>Name</dt><dd>{{ user.get_full_name|default:user.email }}</dd></div>
+      <div><dt>Email</dt><dd>{{ user.email }}</dd></div>
+      <div><dt>Member since</dt><dd>{{ user.date_joined|date:"M j, Y" }}</dd></div>
+    </dl>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">Orders</h2>
+    {% with orders=user.orders.all %}
+      {% if orders %}
+        <ul class="order-list">
+          {% for order in orders %}
+            <li>
+              <span>Order #{{ order.pk }}</span>
+              <span class="badge badge--muted">{{ order.get_status_display }}</span>
+              <strong>₹{{ order.total }}</strong>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="muted">No orders yet. <a href="{% url 'store:dashboard' %}">Discover handcrafted pieces →</a></p>
+      {% endif %}
+    {% endwith %}
+  </div>
+</div>
+{% endblock %}

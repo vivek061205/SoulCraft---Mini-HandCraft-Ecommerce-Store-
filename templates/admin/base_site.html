@@ -1,0 +1,32 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block extrahead %}
+  {{ block.super }}
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --soulcraft-brand: #8b6f47;
+      --soulcraft-brand-dark: #6f5738;
+      --soulcraft-accent: #e8a13a;
+      --soulcraft-canvas: #f7f5f0;
+      --soulcraft-ink: #17252a;
+    }
+    body { font-family: "Inter", system-ui, sans-serif; background: var(--soulcraft-canvas); }
+    #header {
+      background: var(--soulcraft-brand);
+      color: #fff;
+      border-bottom: 3px solid var(--soulcraft-accent);
+    }
+    #header a:link, #header a:visited { color: #fff; }
+    #branding h1 { font-weight: 600; letter-spacing: -0.01em; }
+    .module h2, .module caption { background: var(--soulcraft-brand); }
+    a:link, a:visited { color: var(--soulcraft-brand-dark); }
+    div.breadcrumbs { background: var(--soulcraft-canvas); }
+    .button, input[type=submit], input[type=button], .submit-row input, .button.default {
+      background: var(--soulcraft-brand); color: #fff; border-radius: 8px;
+    }
+    .button.default:hover, .submit-row input:hover { background: var(--soulcraft-brand-dark); }
+    #user-tools a { color: var(--soulcraft-accent); }
+  </style>
+{% endblock %}

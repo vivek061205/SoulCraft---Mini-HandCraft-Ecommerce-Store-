@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block content %}
+<div class="container pdp">
+  <nav class="breadcrumbs" aria-label="Breadcrumb">
+    <a href="{% url 'store:dashboard' %}">Shop</a>
+    <span aria-hidden="true">/</span>
+    <a href="{% url 'store:dashboard' %}?category={{ product.category.slug }}">{{ product.category.name }}</a>
+    <span aria-hidden="true">/</span>
+    <span aria-current="page">{{ product.name }}</span>
+  </nav>
+
+  <div class="pdp-grid">
+    <div class="pdp-gallery" data-gallery>
+      <div class="pdp-main-media">
+        {% if product.primary_image %}
+          <img id="pdp-main-img" src="{{ product.primary_image }}" alt="{{ product.name }}">
+        {% else %}
+          <div class="product-placeholder product-placeholder--lg" aria-hidden="true">{{ product.name|slice:":1" }}</div>
+        {% endif %}
+      </div>
+      {% if product.images.all|length > 1 %}
+        <div class="pdp-thumbs">
+          {% for img in product.images.all %}
+            <button type="button"
+                    class="pdp-thumb {% if forloop.first %}is-active{% endif %}"
+                    data-gallery-thumb
+                    data-src="{{ img.image.url }}"
+                    aria-label="View image {{ forloop.counter }}">
+              <img src="{{ img.image.url }}" alt="{{ img.alt_text|default:product.name }}" loading="lazy">
+            </button>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="pdp-info">
+      <p class="product-category">{{ product.category.name }}</p>
+      <h1 class="pdp-title">{{ product.name }}</h1>
+      <p class="pdp-price">₹{{ product.price }}</p>
+
+      <p class="pdp-stock">
+        {% if product.in_stock %}
+          <span class="dot dot--success"></span> Ready to ship — made in small batches
+        {% else %}
+          <span class="dot dot--danger"></span> Currently sold out
+        {% endif %}
+      </p>
+
+      <p class="pdp-desc">{{ product.description|linebreaksbr }}</p>
+
+      {% if product.in_stock %}
+        <form method="post" action="{% url 'store:cart_add' product.pk %}" class="add-to-cart">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.get_full_path }}">
+          <div class="qty-field">
+            <label for="qty-{{ product.pk }}">Qty</label>
+            <input type="number" id="qty-{{ product.pk }}" name="quantity" value="1" min="1"
+                   max="{{ product.stock|default:99 }}" inputmode="numeric">
+          </div>
+          <button type="submit" class="btn btn--primary btn--lg">Add to cart — ₹{{ product.price }}</button>
+        </form>
+
+        <form method="post" action="{% url 'store:buy_now' product.pk %}" class="buy-now-form">
+          {% csrf_token %}
+          <input type="hidden" name="quantity" value="1" id="buy-now-qty-{{ product.pk }}">
+          <button type="submit" class="btn btn--primary btn--lg btn--block">Buy Now</button>
+        </form>
+      {% else %}
+        <a href="{% url 'support:home' %}" class="btn btn--outline btn--lg">Ask when it's back</a>
+      {% endif %}
+
+      <ul class="pdp-perks">
+        <li>Free shipping over ₹1,999</li>
+        <li>7-day easy returns</li>
+        <li>Handmade — slight variations are natural</li>
+      </ul>
+    </div>
+  </div>
+
+  {% if related %}
+    <section class="related">
+      <h2 class="section-title">You might also like</h2>
+      <div class="product-grid">
+        {% for product in related %}
+          {% include "store/_product_card.html" %}
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+</div>
+{% endblock %}

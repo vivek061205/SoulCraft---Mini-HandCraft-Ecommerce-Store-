@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Create account{% endblock %}
+{% block body_class %}page-auth{% endblock %}
+
+{% block content %}
+<div class="auth-wrap">
+  <div class="auth-card">
+    <h1 class="auth-title">Create your account</h1>
+    <p class="auth-sub">Join SoulCraft in seconds</p>
+
+    {% if form.non_field_errors %}
+      <div class="alert alert--error" role="alert">
+        {{ form.non_field_errors.0 }}
+        <button type="button" class="alert-close" aria-label="Dismiss">&times;</button>
+      </div>
+    {% endif %}
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+
+      <div class="field">
+        <label for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
+        {{ form.name }}
+        {% for e in form.name.errors %}<p class="field-error">{{ e }}</p>{% endfor %}
+      </div>
+
+      <div class="field">
+        <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+        {{ form.email }}
+        {% for e in form.email.errors %}<p class="field-error">{{ e }}</p>{% endfor %}
+      </div>
+
+      <div class="field">
+        <label for="{{ form.password1.id_for_label }}">{{ form.password1.label }}</label>
+        {{ form.password1 }}
+        {% for e in form.password1.errors %}<p class="field-error">{{ e }}</p>{% endfor %}
+        {% if form.password1.help_text %}<p class="field-hint">{{ form.password1.help_text }}</p>{% endif %}
+      </div>
+
+      <button type="submit" class="btn btn--primary btn--block">Create account</button>
+    </form>
+
+    <div class="divider"><span>or</span></div>
+
+    <!-- Google OAuth — official branding, server-rendered -->
+    {% include "account/_google_button.html" %}
+
+    <p class="auth-alt">Already have an account? <a href="{% url 'login' %}">Sign in</a></p>
+  </div>
+</div>
+{% endblock %}

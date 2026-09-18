@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Support{% endblock %}
+{% block body_class %}page-support{% endblock %}
+
+{% block content %}
+<div class="container page-pad">
+  <header class="page-head">
+    <h1 class="page-title">How can we help?</h1>
+    <p class="page-sub">Ask the assistant below, or send us a ticket — we reply within one business day.</p>
+  </header>
+
+  <div class="support-layout">
+    <!-- Chatbot -->
+    <section class="chatbot" id="chat" aria-label="Support chatbot">
+      <div class="chat-head">
+        <span class="chat-avatar" aria-hidden="true">A</span>
+        <div>
+          <h2 class="chat-title">SoulCraft Assistant</h2>
+          <p class="chat-status"><span class="dot dot--success"></span> Usually replies instantly</p>
+        </div>
+      </div>
+
+      <div class="chat-log" id="chat-log" aria-live="polite">
+        <div class="msg msg--bot">
+          <p>Hi! I'm the SoulCraft assistant. Ask me about orders, shipping, returns, or caring for your handcrafted pieces.</p>
+        </div>
+      </div>
+
+      <form class="chat-input" id="chat-form" autocomplete="off">
+        {% csrf_token %}
+        <input type="text" id="chat-text" name="message" placeholder="Type your question…" aria-label="Your message" maxlength="500" required>
+        <button type="submit" class="btn btn--primary">Send</button>
+      </form>
+      <p class="chat-foot">Can't find your answer? <a href="#ticket-form">Submit a ticket</a> and a human will follow up.</p>
+    </section>
+
+    <!-- Ticket form -->
+    <section class="ticket" id="ticket-form" aria-label="Submit a support ticket">
+      <h2 class="section-title">Submit a ticket</h2>
+
+      {% if ticket_created %}
+        <div class="alert alert--success" role="status">
+          Thanks! Your ticket is in — check your inbox for a confirmation.
+          <button type="button" class="alert-close" aria-label="Dismiss">&times;</button>
+        </div>
+      {% endif %}
+
+      <form method="post" action="{% url 'support:ticket' %}" novalidate>
+        {% csrf_token %}
+        {% for field in form %}
+          <div class="field">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% for e in field.errors %}<p class="field-error">{{ e }}</p>{% endfor %}
+          </div>
+        {% endfor %}
+        <button type="submit" class="btn btn--primary btn--block">Send ticket</button>
+      </form>
+    </section>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+<script>
+  window.AURORA_CHAT_URL = "{% url 'support:chat' %}";
+</script>
+{% endblock %}

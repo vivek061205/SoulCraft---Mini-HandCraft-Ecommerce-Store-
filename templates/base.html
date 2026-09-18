@@ -1,0 +1,116 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Handcrafted Goods, Made with Heart{% endblock %} | SoulCraft</title>
+  <meta name="description" content="SoulCraft — handcrafted pottery, jewelry, decor and candles, made by artisans and made to last.">
+
+  <!-- Favicon: artisanal "S" clay mark (placeholder until a real one is provided) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%238b6f47'/%3E%3Ctext x='32' y='44' font-family='Georgia,serif' font-size='36' font-weight='700' fill='%23fdf3e3' text-anchor='middle'%3ES%3C/text%3E%3C/svg%3E">
+
+  <!-- Google Fonts pairing: Fraunces (display serif) + Inter (UI sans) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="{% static 'css/main.css' %}?v=20260917">
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="page {% block body_class %}{% endblock %}">
+
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="{% url 'store:dashboard' %}" aria-label="SoulCraft home">
+        <img class="brand-mark brand-logo" src="/media/products/2026/ChatGPT%20Image%20Sep%2016%2C%202026%2C%2009_05_35%20PM.png" alt="">
+        <span class="brand-name">SoulCraft</span>
+      </a>
+
+      <nav class="nav-links" id="nav-links" aria-label="Primary">
+        <a href="{% url 'store:dashboard' %}" class="nav-link">Shop</a>
+        <a href="{% url 'support:home' %}" class="nav-link">Support</a>
+        {% if user.is_authenticated %}
+          <a href="{% url 'profile' %}" class="nav-link">Account</a>
+          {% if user.is_staff %}
+            <a href="/admin/" class="nav-link nav-link--staff">Admin</a>
+          {% endif %}
+        {% endif %}
+      </nav>
+
+      <div class="nav-actions">
+        <form class="nav-search" action="{% url 'store:dashboard' %}" method="get" role="search">
+          <input type="search" name="q" value="{{ query|default:'' }}" placeholder="Search handcrafted pieces…" aria-label="Search products">
+        </form>
+
+        <a href="{% url 'store:cart' %}" class="cart-btn" aria-label="Cart ({{ cart_count }} items)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          <span class="cart-count {% if not cart_count %}is-empty{% endif %}" data-cart-count>{{ cart_count }}</span>
+        </a>
+
+        {% if user.is_authenticated %}
+          <form method="post" action="{% url 'logout' %}" class="inline-form">
+            {% csrf_token %}
+            <button type="submit" class="btn btn--ghost btn--sm">Log out</button>
+          </form>
+        {% else %}
+          <a href="{% url 'login' %}" class="btn btn--ghost btn--sm">Sign in</a>
+        {% endif %}
+
+        <button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="nav-links" aria-label="Toggle menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="site-main">
+    {% if messages %}
+      <div class="container">
+        {% for message in messages %}
+          <div class="alert alert--{{ message.tags|default:'info' }}" role="status">
+            <span class="alert-msg">{{ message }}</span>
+            <button type="button" class="alert-close" aria-label="Dismiss">&times;</button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <a class="brand" href="{% url 'store:dashboard' %}">
+          <span class="brand-mark" aria-hidden="true">S</span>
+          <span class="brand-name">SoulCraft</span>
+        </a>
+        <p class="footer-blurb">Handcrafted pieces made by artisans — small batches, honest materials, made to last.</p>
+      </div>
+      <div>
+        <h4>Shop</h4>
+        <a href="{% url 'store:dashboard' %}">All pieces</a>
+        <a href="{% url 'store:cart' %}">Your cart</a>
+      </div>
+      <div>
+        <h4>Help</h4>
+        <a href="{% url 'support:home' %}">Support center</a>
+        <a href="{% url 'support:home' %}#chat">Chat with us</a>
+      </div>
+      <div>
+        <h4>Account</h4>
+        <a href="{% url 'login' %}">Sign in</a>
+        <a href="{% url 'signup' %}">Create account</a>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <span>© {% now "Y" %} SoulCraft. All rights reserved.</span>
+      <span>Secure checkout · CSRF-protected forms · PBKDF2-hashed passwords</span>
+    </div>
+  </footer>
+
+  <script src="{% static 'js/main.js' %}" defer></script>
+  {% block extra_body %}{% endblock %}
+</body>
+</html>

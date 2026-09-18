@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Your cart{% endblock %}
+
+{% block content %}
+<div class="container page-pad">
+  <h1 class="page-title">Your cart</h1>
+
+  {% if items %}
+    <div class="cart-layout">
+      <div class="cart-lines">
+        {% for product, qty, line_total in items %}
+          <div class="cart-line">
+            <a href="{% url 'store:product_detail' product.slug %}" class="cart-thumb">
+              {% if product.primary_image %}
+                <img src="{{ product.primary_image }}" alt="{{ product.name }}">
+              {% else %}
+                <div class="product-placeholder" aria-hidden="true">{{ product.name|slice:":1" }}</div>
+              {% endif %}
+            </a>
+            <div class="cart-line-info">
+              <p class="product-category">{{ product.category.name }}</p>
+              <h3 class="cart-line-name"><a href="{% url 'store:product_detail' product.slug %}">{{ product.name }}</a></h3>
+              <p class="cart-unit">₹{{ product.price }} each</p>
+            </div>
+            <div class="cart-line-controls">
+              <form method="post" action="{% url 'store:cart_update' product.pk %}" class="qty-stepper">
+                {% csrf_token %}
+                <button type="submit" name="quantity" value="{{ qty|add:'-1' }}" class="qty-btn" aria-label="Decrease quantity">−</button>
+                <span class="qty-value" aria-live="polite">{{ qty }}</span>
+                <button type="submit" name="quantity" value="{{ qty|add:'1' }}" class="qty-btn" aria-label="Increase quantity">+</button>
+              </form>
+              <span class="cart-line-total">₹{{ line_total }}</span>
+              <form method="post" action="{% url 'store:cart_remove' product.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="link-danger" aria-label="Remove {{ product.name }}">Remove</button>
+              </form>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <aside class="cart-summary">
+        <h2 class="summary-title">Summary</h2>
+        <div class="summary-row">
+          <span>Subtotal</span><strong>₹{{ subtotal }}</strong>
+        </div>
+        <div class="summary-row summary-row--muted">
+          <span>Shipping</span><span>Calculated at checkout</span>
+        </div>
+        <a href="{% url 'store:checkout' %}" class="btn btn--primary btn--block">Checkout</a>
+        <a href="{% url 'store:dashboard' %}" class="link-continue">Continue shopping</a>
+      </aside>
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <h3>Your cart is empty</h3>
+      <p>Find a handcrafted piece you'll love in the collection.</p>
+      <a href="{% url 'store:dashboard' %}" class="btn btn--primary">Browse products</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
